@@ -9,7 +9,7 @@ const generateFreqTable = () => {
     startsPlzNoCollisions : {},
   }
   for(let i=1; i<arr.length; i++){
-    const prevWord = arr[i-1]
+    const prev = arr[i-1]
     const word = arr[i]
     if(word[word.length-1] === `.` || word[word.length-1] === `!` || word[word.length-1] === `?`){
       if(!freqTable.endsPlzNoCollisions[word]){
@@ -18,19 +18,19 @@ const generateFreqTable = () => {
         freqTable.endsPlzNoCollisions[word]++
       }
     }
-    if(prevWord[prevWord.length-1] === `.` || prevWord[prevWord.length-1] === `!` || prevWord[prevWord.length-1] === `?`){
+    if(prev[prev.length-1] === `.` || prev[prev.length-1] === `!` || prev[prev.length-1] === `?`){
       if(!freqTable.startsPlzNoCollisions[word]){
         freqTable.startsPlzNoCollisions[word] = 1
       }else{
         freqTable.startsPlzNoCollisions[word]++
       }
     }
-    if(!freqTable[prevWord]){
-      freqTable[prevWord] = {[word] : 1}
-    }else if(!freqTable[prevWord][word]){
-      freqTable[prevWord][word] = 1
+    if(!freqTable[prev]){
+      freqTable[prev] = {[word] : 1}
+    }else if(!freqTable[prev][word]){
+      freqTable[prev][word] = 1
     }else{
-      freqTable[prevWord][word]++
+      freqTable[prev][word]++
     }
   }
   return freqTable
@@ -62,11 +62,11 @@ const generateMarkov = () => {
 
 const markov = generateMarkov()
 
-const pickNextWord = prevWord => {
-  const selector = Math.random() * prevWord.multiplier
-  const possibleNextWords = prevWord.selectionArr
+const pickNextWord = prev => {
+  const selector = Math.random() * prev.multiplier
+  const possibleNextWords = prev.selectionArr
   for(let i=0; i<possibleNextWords.length; i++){
-    if(selector <= prevWord[possibleNextWords[i]]){
+    if(selector <= prev[possibleNextWords[i]]){
       return possibleNextWords[i]
     }
   }
