@@ -45,13 +45,12 @@ const freqToMarkov = freqTable => {
     nextWords.forEach(nextWord => {
       sum += freqTable[word][nextWord]
     })
-    let multiplier = 0
+    let lowerBound = 0
     nextWords.forEach(nextWord => {
-      freqTable[word][nextWord] /= sum
-      if(freqTable[word][nextWord] > multiplier) multiplier = freqTable[word][nextWord]
+      const upperBound = lowerBound + freqTable[word][nextWord]/sum
+      freqTable[word][nextWord] = [lowerBound, upperBound]
+      lowerBound = upperBound
     })
-    freqTable[word].selectionArr = nextWords.sort((a, b) => freqTable[word][a] - freqTable[word][b])
-    freqTable[word].multiplier = multiplier
   })
   return freqTable
 }
@@ -64,24 +63,22 @@ const generateMarkov = () => {
 const markov = generateMarkov()
 
 const pickNextWord = prev => {
-  const selector = Math.random() * prev.multiplier
-  const possibleNextWords = prev.selectionArr
-  for(let i=0; i<possibleNextWords.length; i++){
-    if(selector <= prev[possibleNextWords[i]]){
-      return possibleNextWords[i]
-    }
+  const selector = Math.random()
+  const nextWords = Object.keys(prev)
+  for(let i=0; i<nextWords.length; i++){
+    if(selector >= prev[nextWords[i]][0] && selector < prev[nextWords[i]][1]) return nextWords[i]
   }
   return ``
 }
 
-const generateQuote = (markov, num) => {
+const generateQuote = num => {
   const res = pickNextWord(markov.startsPlzNoCollisions).split(` `)
-  for(let i=1; i<num-1; i++){
+  for(let i=2; i<num-2; i++){
     res.push(...pickNextWord(markov[res.slice(-2).join(` `)]).split(` `))
   }
   return res.join(` `)
 }
 
-const quote = generateQuote(markov, 200)
+const quote = generateQuote(200)
 
 console.log(quote)
