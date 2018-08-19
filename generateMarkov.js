@@ -61,3 +61,26 @@ const generateMarkov = () => {
 }
 
 const markov = generateMarkov()
+
+const pickNextWord = prevWord => {
+  const selector = Math.random() * prevWord.multiplier
+  const possibleNextWords = prevWord.selectionArr
+  for(let i=0; i<possibleNextWords.length; i++){
+    if(selector <= prevWord[possibleNextWords[i]]){
+      return possibleNextWords[i]
+    }
+  }
+  return ``
+}
+
+const generateQuote = (markov, num) => {
+  const res = [pickNextWord(markov.startsPlzNoCollisions)]
+  for(let i=1; i<num-1; i++){
+    res.push(pickNextWord(markov[res[i-1]]))
+  }
+  return res.join(` `)
+}
+
+const quote = generateQuote(markov, 200)
+
+console.log(quote)
