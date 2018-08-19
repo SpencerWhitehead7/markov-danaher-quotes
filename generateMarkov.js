@@ -1,6 +1,6 @@
 const fs = require(`fs`)
 
-const text = fs.readFileSync(`./danaherPosts.txt`, `utf8`)
+const text = fs.readFileSync(`./cleanDanaherPosts.txt`, `utf8`)
 
 const generateFreqTable = () => {
   const arr = text.split(` `)
