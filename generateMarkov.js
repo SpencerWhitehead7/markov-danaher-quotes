@@ -55,13 +55,16 @@ const freqToMarkov = freqTable => {
   return freqTable
 }
 
-const generateMarkov = (markovNum) => {
+const generateMarkov = markovNum => {
   const freqtable = generateFreqTable(markovNum)
   return freqToMarkov(freqtable)
 }
 
-const markov = generateMarkov(1)
+const saveMarkovs = upToMarkovNum => {
+  for(let i=1; i<=upToMarkovNum; i++){
+    const markov = JSON.stringify(generateMarkov(i))
+    fs.writeFileSync(`markov${i}.txt`, markov, `utf8`)    
+  }
+}
 
-const markovToSave = JSON.stringify(markov)
-
-fs.writeFileSync(`markov1.txt`, markovToSave, `utf8`)
+saveMarkovs(5)
