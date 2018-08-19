@@ -60,6 +60,8 @@ const generateMarkov = (markovNum) => {
   return freqToMarkov(freqtable)
 }
 
-const markov = generateMarkov(3)
+const markov = generateMarkov(1)
 
-module.exports = markov
+const markovToSave = JSON.stringify(markov)
+
+fs.writeFileSync(`markov1.txt`, markovToSave, `utf8`)
