@@ -70,7 +70,7 @@ const pickNextWord = prev => {
   return ``
 }
 
-const generateQuote = (markov, num) => {
+const generateQuote = num => {
   const res = [pickNextWord(markov.startsPlzNoCollisions)]
   for(let i=1; i<num-1; i++){
     res.push(pickNextWord(markov[res[i-1]]))
@@ -78,6 +78,6 @@ const generateQuote = (markov, num) => {
   return res.join(` `)
 }
 
-const quote = generateQuote(markov, 200)
+const quote = generateQuote(200)
 
 console.log(quote)
