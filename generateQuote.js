@@ -1,4 +1,6 @@
-const markov = require(`./generateMarkov`)
+const fs = require(`fs`)
+
+const markov = JSON.parse(fs.readFileSync(`./markov3.txt`))
 
 const pickNextWord = prev => {
   const selector = Math.random()
