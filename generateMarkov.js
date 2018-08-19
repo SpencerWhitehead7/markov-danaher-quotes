@@ -54,3 +54,10 @@ const freqToMarkov = freqTable => {
   })
   return freqTable
 }
+
+const generateMarkov = () => {
+  const freqtable = generateFreqTable()
+  return freqToMarkov(freqtable)
+}
+
+const markov = generateMarkov()
