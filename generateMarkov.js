@@ -35,3 +35,22 @@ const generateFreqTable = () => {
   }
   return freqTable
 }
+
+const freqToMarkov = freqTable => {
+  const words = Object.keys(freqTable)
+  words.forEach(word => {
+    const nextWords = Object.keys(freqTable[word])
+    let sum = 0
+    nextWords.forEach(nextWord => {
+      sum += freqTable[word][nextWord]
+    })
+    let multiplier = 0
+    nextWords.forEach(nextWord => {
+      freqTable[word][nextWord] /= sum
+      if(freqTable[word][nextWord] > multiplier) multiplier = freqTable[word][nextWord]
+    })
+    freqTable[word].selectionArr = nextWords.sort((a, b) => freqTable[word][a] - freqTable[word][b])
+    freqTable[word].multiplier = multiplier
+  })
+  return freqTable
+}
