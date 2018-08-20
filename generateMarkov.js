@@ -2,7 +2,7 @@ const fs = require(`fs`)
 
 const text = fs.readFileSync(`./cleanDanaherPosts.txt`, `utf8`)
 
-const generateFreqTable = (num) => {
+const generateFreqTable = num => {
   const arr = text.split(` `)
   const freqTable = {
     endsPlzNoCollisions : {},
@@ -41,10 +41,7 @@ const freqToMarkov = freqTable => {
   const words = Object.keys(freqTable)
   words.forEach(word => {
     const nextWords = Object.keys(freqTable[word])
-    let sum = 0
-    nextWords.forEach(nextWord => {
-      sum += freqTable[word][nextWord]
-    })
+    const sum = nextWords.reduce((acc, curr) => acc + freqTable[word][curr], 0)
     let lowerBound = 0
     nextWords.forEach(nextWord => {
       const upperBound = lowerBound + freqTable[word][nextWord]/sum
