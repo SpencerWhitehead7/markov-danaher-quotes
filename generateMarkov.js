@@ -4,28 +4,21 @@ const text = fs.readFileSync(`./cleanDanaherPosts.txt`, `utf8`)
 
 const generateFreqTable = num => {
   const arr = text.split(` `)
-  const freqTable = {
-    endsPlzNoCollisions : {},
-    startsPlzNoCollisions : {},
-  }
+  const freqTable = {sTaRt5pLzNoCoLl1s1oNs : {}}
+
   for(let i=num; i<arr.length; i++){
     const prev = arr.slice(i-num, i).join(` `)
     const word = arr[i]
-    if(word[word.length-1] === `.` || word[word.length-1] === `!` || word[word.length-1] === `?`){
-      if(!freqTable.endsPlzNoCollisions[word]){
-        freqTable.endsPlzNoCollisions[word] = 1
-      }else{
-        freqTable.endsPlzNoCollisions[word]++
-      }
-    }
+    
     if(prev[prev.length-1] === `.` || prev[prev.length-1] === `!` || prev[prev.length-1] === `?`){
-      const startWord = arr.slice(i, i+num).join(` `)
-      if(!freqTable.startsPlzNoCollisions[startWord]){
-        freqTable.startsPlzNoCollisions[startWord] = 1
+      const start = arr.slice(i, i+num).join(` `)
+      if(!freqTable.sTaRt5pLzNoCoLl1s1oNs[start]){
+        freqTable.sTaRt5pLzNoCoLl1s1oNs[start] = 1
       }else{
-        freqTable.startsPlzNoCollisions[startWord]++
+        freqTable.sTaRt5pLzNoCoLl1s1oNs[start]++
       }
     }
+    
     if(!freqTable[prev]){
       freqTable[prev] = {[word] : 1}
     }else if(!freqTable[prev][word]){
@@ -34,6 +27,7 @@ const generateFreqTable = num => {
       freqTable[prev][word]++
     }
   }
+
   return freqTable
 }
 
