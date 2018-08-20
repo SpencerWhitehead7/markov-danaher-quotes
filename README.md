@@ -11,15 +11,22 @@ https://en.wikipedia.org/wiki/Markov_chain
 
 ## Files
 
+A brief description of a way to (crudly, semi-by-hand) scrape the text of facebook posts is in scraping.js
+
 The plaintexts of his social media posts, which I scraped off facebook, are in the danaherPosts.txt file
+
 The script used to clean the posts into a format appropriate for turning into a Markov chain is in cleanText.js
+
 A version of them cleaned for processing into a Markov chain is in cleanDanaherPosts.txt
+
 The actual code for creating the chains is in the generateMarkov.js file
+
 Markov chains based on the previous 1-5 words are in the markov1-5.txt files, as JSON strings
+
 The script that actually generates the posts and logs them is in generateQuote.js
 
 calculateMetadata is basically a scrap paper file I used for getting metadata on the posts/sentences/etc.
-A brief description of a way to (crudly, semi-by-hand) scrape the text of facebook posts is in scraping.js
+
 
 ## Future Plans
 
