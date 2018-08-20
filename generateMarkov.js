@@ -35,8 +35,8 @@ const freqToMarkov = freqTable => {
   Object.keys(freqTable).forEach(word => {
     const rootWord = freqTable[word]
     const nextWords = Object.keys(rootWord)
-    const endWords = nextWords.filter(word => {
-      const lastChar = word[word.length-1]
+    const endWords = nextWords.filter(nextWord => {
+      const lastChar = nextWord[nextWord.length-1]
       return lastChar === `.` || lastChar === `!` || lastChar === `?`
     })
 
