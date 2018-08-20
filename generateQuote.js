@@ -6,7 +6,7 @@ const markov = JSON.parse(fs.readFileSync(`./markov${markovNum}.txt`))
 
 const pickNextWord = prev => {
   const selector = Math.random()
-  const nextWords = Object.keys(prev)
+  const nextWords = Object.keys(prev).filter(key => key !== `eNd5pLzNoCoL11s1oNs`)
   for(let i=0; i<nextWords.length; i++){
     if(selector >= prev[nextWords[i]][0] && selector < prev[nextWords[i]][1]) return nextWords[i]
   }
