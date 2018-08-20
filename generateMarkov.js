@@ -4,28 +4,21 @@ const text = fs.readFileSync(`./cleanDanaherPosts.txt`, `utf8`)
 
 const generateFreqTable = num => {
   const arr = text.split(` `)
-  const freqTable = {
-    endsPlzNoCollisions : {},
-    startsPlzNoCollisions : {},
-  }
+  const freqTable = {sTaRt5pLzNoCoLl1s1oNs : {}}
+
   for(let i=num; i<arr.length; i++){
     const prev = arr.slice(i-num, i).join(` `)
     const word = arr[i]
-    if(word[word.length-1] === `.` || word[word.length-1] === `!` || word[word.length-1] === `?`){
-      if(!freqTable.endsPlzNoCollisions[word]){
-        freqTable.endsPlzNoCollisions[word] = 1
-      }else{
-        freqTable.endsPlzNoCollisions[word]++
-      }
-    }
+    
     if(prev[prev.length-1] === `.` || prev[prev.length-1] === `!` || prev[prev.length-1] === `?`){
-      const startWord = arr.slice(i, i+num).join(` `)
-      if(!freqTable.startsPlzNoCollisions[startWord]){
-        freqTable.startsPlzNoCollisions[startWord] = 1
+      const start = arr.slice(i, i+num).join(` `)
+      if(!freqTable.sTaRt5pLzNoCoLl1s1oNs[start]){
+        freqTable.sTaRt5pLzNoCoLl1s1oNs[start] = 1
       }else{
-        freqTable.startsPlzNoCollisions[startWord]++
+        freqTable.sTaRt5pLzNoCoLl1s1oNs[start]++
       }
     }
+    
     if(!freqTable[prev]){
       freqTable[prev] = {[word] : 1}
     }else if(!freqTable[prev][word]){
@@ -34,27 +27,44 @@ const generateFreqTable = num => {
       freqTable[prev][word]++
     }
   }
+
   return freqTable
 }
 
 const freqToMarkov = freqTable => {
-  const words = Object.keys(freqTable)
-  words.forEach(word => {
-    const nextWords = Object.keys(freqTable[word])
-    const sum = nextWords.reduce((acc, curr) => acc + freqTable[word][curr], 0)
+  Object.keys(freqTable).forEach(word => {
+    const rootWord = freqTable[word]
+    const nextWords = Object.keys(rootWord)
+    const endWords = nextWords.filter(nextWord => {
+      const lastChar = nextWord[nextWord.length-1]
+      return lastChar === `.` || lastChar === `!` || lastChar === `?`
+    })
+
+    if(endWords.length > 0){
+      rootWord.eNd5pLzNoCoL11s1oNs = {}
+      const sum = endWords.reduce((acc, curr) => acc + rootWord[curr], 0)
+      let lowerBound = 0
+      endWords.forEach(endWord => {
+        const upperBound = lowerBound + rootWord[endWord]/sum
+        rootWord.eNd5pLzNoCoL11s1oNs[endWord] = [lowerBound, upperBound]
+        lowerBound = upperBound
+      })
+    }
+
+    const sum = nextWords.reduce((acc, curr) => acc + rootWord[curr], 0)
     let lowerBound = 0
     nextWords.forEach(nextWord => {
-      const upperBound = lowerBound + freqTable[word][nextWord]/sum
-      freqTable[word][nextWord] = [lowerBound, upperBound]
+      const upperBound = lowerBound + rootWord[nextWord]/sum
+      rootWord[nextWord] = [lowerBound, upperBound]
       lowerBound = upperBound
     })
   })
+
   return freqTable
 }
 
 const generateMarkov = markovNum => {
-  const freqtable = generateFreqTable(markovNum)
-  return freqToMarkov(freqtable)
+  return freqToMarkov(generateFreqTable(markovNum))
 }
 
 const saveMarkovs = upToMarkovNum => {
