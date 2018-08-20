@@ -53,7 +53,7 @@ const generateQuoteBySentences = length => {
 }
 
 const generateQuoteByWords = length => {
-  const res = pickNextWord(markov.startsPlzNoCollisions).split(` `)
+  const res = pickNextWord(markov.sTaRt5pLzNoCoLl1s1oNs).split(` `)
   for(let i=markovNum; i<length; i++){
     res.push(pickNextWord(markov[res.slice(-markovNum).join(` `)]))
   }
