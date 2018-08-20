@@ -41,12 +41,12 @@ const freqToMarkov = freqTable => {
     })
 
     if(endWords.length > 0){
-      rootWord.eNd5pLzNoCoLiSi0nS = {}
+      rootWord.eNd5pLzNoCoL11s1oNs = {}
       const sum = endWords.reduce((acc, curr) => acc + rootWord[curr], 0)
       let lowerBound = 0
       endWords.forEach(endWord => {
         const upperBound = lowerBound + rootWord[endWord]/sum
-        rootWord.eNd5pLzNoCoLiSi0nS[endWord] = [lowerBound, upperBound]
+        rootWord.eNd5pLzNoCoL11s1oNs[endWord] = [lowerBound, upperBound]
         lowerBound = upperBound
       })
     }
