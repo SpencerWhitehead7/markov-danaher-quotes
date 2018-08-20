@@ -32,17 +32,34 @@ const generateFreqTable = num => {
 }
 
 const freqToMarkov = freqTable => {
-  const words = Object.keys(freqTable)
-  words.forEach(word => {
-    const nextWords = Object.keys(freqTable[word])
-    const sum = nextWords.reduce((acc, curr) => acc + freqTable[word][curr], 0)
+  Object.keys(freqTable).forEach(word => {
+    const rootWord = freqTable[word]
+    const nextWords = Object.keys(rootWord)
+    const endWords = nextWords.filter(word => {
+      const lastChar = word[word.length-1]
+      return lastChar === `.` || lastChar === `!` || lastChar === `?`
+    })
+
+    if(endWords.length > 0){
+      rootWord.eNd5pLzNoCoLiSi0nS = {}
+      const sum = endWords.reduce((acc, curr) => acc + rootWord[curr], 0)
+      let lowerBound = 0
+      endWords.forEach(endWord => {
+        const upperBound = lowerBound + rootWord[endWord]/sum
+        rootWord.eNd5pLzNoCoLiSi0nS[endWord] = [lowerBound, upperBound]
+        lowerBound = upperBound
+      })
+    }
+
+    const sum = nextWords.reduce((acc, curr) => acc + rootWord[curr], 0)
     let lowerBound = 0
     nextWords.forEach(nextWord => {
-      const upperBound = lowerBound + freqTable[word][nextWord]/sum
-      freqTable[word][nextWord] = [lowerBound, upperBound]
+      const upperBound = lowerBound + rootWord[nextWord]/sum
+      rootWord[nextWord] = [lowerBound, upperBound]
       lowerBound = upperBound
     })
   })
+
   return freqTable
 }
 
