@@ -45,7 +45,7 @@ const endSentence = prev => {
 
 const generateSentence = prev => {
   const res = prev ? prev : pickNextWord(markov.startsPlzNoCollisions).split(` `)
-  const length = 25 + Math.round(Math.random() * 10)
+  const length = 25
   for(let i=markovNum; i<length-1; i++){
     res.push(pickNextWord(markov[res.slice(-markovNum).join(` `)]))
   }
