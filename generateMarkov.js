@@ -64,8 +64,7 @@ const freqToMarkov = freqTable => {
 }
 
 const generateMarkov = markovNum => {
-  const freqtable = generateFreqTable(markovNum)
-  return freqToMarkov(freqtable)
+  return freqToMarkov(generateFreqTable(markovNum))
 }
 
 const saveMarkovs = upToMarkovNum => {
