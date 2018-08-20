@@ -1,6 +1,8 @@
 const fs = require(`fs`)
 
-const markov = JSON.parse(fs.readFileSync(`./markov3.txt`))
+const markovNum = 3
+
+const markov = JSON.parse(fs.readFileSync(`./markov${markovNum}.txt`))
 
 const pickNextWord = prev => {
   const selector = Math.random()
@@ -10,18 +12,6 @@ const pickNextWord = prev => {
   }
   return ``
 }
-
-const generateQuote = (length, markovNum) => {
-  const res = pickNextWord(markov.startsPlzNoCollisions).split(` `)
-  for(let i=markovNum; i<length; i++){
-    res.push(pickNextWord(markov[res.slice(-markovNum).join(` `)]))
-  }
-  return res.join(` `)
-}
-
-const quote = generateQuote(200, 3)
-
-// console.log(quote)
 
 const endSentence = prev => {
   const nextWords = Object.keys(prev).filter(word => {
@@ -53,8 +43,8 @@ const endSentence = prev => {
   }
 }
 
-const generateSentence = (markovNum, prev) => {
-  const res = prev ? pickNextWord(markov[prev]).split(` `) : pickNextWord(markov.startsPlzNoCollisions).split(` `)
+const generateSentence = prev => {
+  const res = prev ? prev : pickNextWord(markov.startsPlzNoCollisions).split(` `)
   const length = 25 + Math.round(Math.random() * 10)
   for(let i=markovNum; i<length-1; i++){
     res.push(pickNextWord(markov[res.slice(-markovNum).join(` `)]))
@@ -64,7 +54,28 @@ const generateSentence = (markovNum, prev) => {
   res[res.length-1][res[res.length-1].length-1] !== `?`){
     res.push(endSentence(markov[res.slice(-markovNum).join(` `)]))
   }
+  return prev ? res.slice(3).join(` `) : res.join(` `)
+}
+
+const generateQuoteBySentences = length => {
+  let count = 1
+  const sentences = [generateSentence()]
+  while(count < length){
+    const prev = sentences[sentences.length-1].split(` `).slice(-markovNum)
+    sentences.push(generateSentence(prev))
+    count++
+  }
+  return sentences.join(` `)
+}
+
+const generateQuoteByWords = length => {
+  const res = pickNextWord(markov.startsPlzNoCollisions).split(` `)
+  for(let i=markovNum; i<length; i++){
+    res.push(pickNextWord(markov[res.slice(-markovNum).join(` `)]))
+  }
   return res.join(` `)
 }
 
-console.log(generateSentence(3))
+const quote = generateQuoteBySentences(2)
+
+console.log(quote)
