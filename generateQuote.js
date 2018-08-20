@@ -14,30 +14,14 @@ const pickNextWord = prev => {
 }
 
 const endSentence = prev => {
-  const nextWords = Object.keys(prev).filter(word => {
-    return (word[word.length-1] === `.` ||
-    word[word.length-1] === `!` ||
-    word[word.length-1] === `?`)
-  })
-  if(nextWords.length === 0){
+  const endWordsObj = prev.eNd5pLzNoCoL11s1oNs
+  if(!endWordsObj){
     return pickNextWord(prev)
   }else{
-    const endWords = {}
-    let sum = 0
-    nextWords.forEach(word => {
-      const wordProb = prev[word][1] - prev[word][0]
-      endWords[word] = wordProb
-      sum += wordProb
-    })
-    let lowerBound = 0
-    nextWords.forEach(word => {
-      const upperBound = lowerBound + endWords[word]/sum
-      endWords[word] = [lowerBound, upperBound]
-      lowerBound = upperBound
-    })
+    const endWords = Object.keys(prev.eNd5pLzNoCoL11s1oNs)
     const selector = Math.random()
-    for(let i=0; i<nextWords.length; i++){
-      if(selector >= endWords[nextWords[i]][0] && selector < endWords[nextWords[i]][1]) return nextWords[i]
+    for(let i=0; i<endWords.length; i++){
+      if(selector >= endWordsObj[endWords[i]][0] && selector < endWordsObj[endWords[i]][1]) return endWords[i]
     }
     return ``
   }
