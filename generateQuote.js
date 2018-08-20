@@ -29,8 +29,8 @@ const endSentence = prev => {
 
 const generateSentence = prev => {
   const res = prev ? prev : pickNextWord(markov.sTaRt5pLzNoCoLl1s1oNs).split(` `)
-  const length = 25
-  for(let i=markovNum; i<length-1; i++){
+  const length = 24
+  for(let i=markovNum; i<length; i++){
     res.push(pickNextWord(markov[res.slice(-markovNum).join(` `)]))
   }
   while(res[res.length-1][res[res.length-1].length-1] !== `.` &&
