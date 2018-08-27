@@ -4,7 +4,7 @@
 
 This is a set of JavaScript files which procedurally generate instagram posts in the style of John Danaher, based on a Markov chain generated from his social media posts. Who is that and why do this, you ask? Danaher is a (relatively) famous brazilian jiu jitsu coach, who makes lengthy and, let's say, distinctively, written social media posts. As a longtime social media follower of his with an interest in procedural generation, I wanted to try using his considerable corpus of work to create Danaher-y quotes with a Markov chain. He doesn't have enough writing to make a chain that always produces truly stunning quotes (yet), but I thought it was cool enough to create a website where people can check out the chain in action.
 
-A site where people can check out the chain in action: Coming soon!
+A site where people can check out the chain in action: https://markov-danaher-quotes.herokuapp.com/
 
 A repo for the site: https://github.com/SpencerWhitehead7/markov-danaher-quotes-site
 
