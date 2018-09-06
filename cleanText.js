@@ -9,7 +9,7 @@ text = text.replace(/[^\w\s.!?',/@&\-']|_/gi, ``)
 text = text.replace(/\./g, `. `).replace(/\!/g, `! `).replace(/\?/g, `? `)
 
 // replace all newlines with spaces
-text = text.replace(/[\r\n]+/g,` `)
+text = text.replace(/[\r\n]+/g, ` `)
 
 // replace all multiple spaces with single spaces
 text = text.replace(/\s\s+/g, ` `)
@@ -23,7 +23,7 @@ arr.forEach(word => {
   word === `I` ||
   word === `a` ||
   word === `A` ||
-  word ===`&`){
+  word === `&`){
     newArr.push(word)
   }
 })

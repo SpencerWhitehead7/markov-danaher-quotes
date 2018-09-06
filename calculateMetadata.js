@@ -22,4 +22,4 @@ allSentences.forEach(sentence => {
   totalWords += sentence.split(` `).length
 })
 
-console.log(totalWords/allSentences.length)
+console.log(totalWords / allSentences.length)

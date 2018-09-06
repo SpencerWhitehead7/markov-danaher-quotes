@@ -6,19 +6,19 @@ const generateFreqTable = num => {
   const arr = text.split(` `)
   const freqTable = {sTaRt5pLzNoCoLl1s1oNs : {}}
 
-  for(let i=num; i<arr.length; i++){
-    const prev = arr.slice(i-num, i).join(` `)
+  for(let i = num; i < arr.length; i++){
+    const prev = arr.slice(i - num, i).join(` `)
     const word = arr[i]
-    
-    if(prev[prev.length-1] === `.` || prev[prev.length-1] === `!` || prev[prev.length-1] === `?`){
-      const start = arr.slice(i, i+num).join(` `)
+
+    if(prev[prev.length - 1] === `.` || prev[prev.length - 1] === `!` || prev[prev.length - 1] === `?`){
+      const start = arr.slice(i, i + num).join(` `)
       if(!freqTable.sTaRt5pLzNoCoLl1s1oNs[start]){
         freqTable.sTaRt5pLzNoCoLl1s1oNs[start] = 1
       }else{
         freqTable.sTaRt5pLzNoCoLl1s1oNs[start]++
       }
     }
-    
+
     if(!freqTable[prev]){
       freqTable[prev] = {[word] : 1}
     }else if(!freqTable[prev][word]){
@@ -36,7 +36,7 @@ const freqToMarkov = freqTable => {
     const rootWord = freqTable[word]
     const nextWords = Object.keys(rootWord)
     const endWords = nextWords.filter(nextWord => {
-      const lastChar = nextWord[nextWord.length-1]
+      const lastChar = nextWord[nextWord.length - 1]
       return lastChar === `.` || lastChar === `!` || lastChar === `?`
     })
 
@@ -45,7 +45,7 @@ const freqToMarkov = freqTable => {
       const sum = endWords.reduce((acc, curr) => acc + rootWord[curr], 0)
       let lowerBound = 0
       endWords.forEach(endWord => {
-        const upperBound = lowerBound + rootWord[endWord]/sum
+        const upperBound = lowerBound + (rootWord[endWord] / sum)
         rootWord.eNd5pLzNoCoL11s1oNs[endWord] = [lowerBound, upperBound]
         lowerBound = upperBound
       })
@@ -54,7 +54,7 @@ const freqToMarkov = freqTable => {
     const sum = nextWords.reduce((acc, curr) => acc + rootWord[curr], 0)
     let lowerBound = 0
     nextWords.forEach(nextWord => {
-      const upperBound = lowerBound + rootWord[nextWord]/sum
+      const upperBound = lowerBound + (rootWord[nextWord] / sum)
       rootWord[nextWord] = [lowerBound, upperBound]
       lowerBound = upperBound
     })
@@ -63,14 +63,12 @@ const freqToMarkov = freqTable => {
   return freqTable
 }
 
-const generateMarkov = markovNum => {
-  return freqToMarkov(generateFreqTable(markovNum))
-}
+const generateMarkov = markovNum => freqToMarkov(generateFreqTable(markovNum))
 
 const saveMarkovs = upToMarkovNum => {
-  for(let i=1; i<=upToMarkovNum; i++){
+  for(let i = 1; i <= upToMarkovNum; i++){
     const markov = JSON.stringify(generateMarkov(i))
-    fs.writeFileSync(`markov${i}.txt`, markov, `utf8`)    
+    fs.writeFileSync(`markov${i}.txt`, markov, `utf8`)
   }
 }
 
