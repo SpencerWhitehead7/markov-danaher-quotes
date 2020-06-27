@@ -1,8 +1,5 @@
-const fs = require(`fs`)
-
-const markovNum = 3
-
-const markov = JSON.parse(fs.readFileSync(`./markov${markovNum}.txt`))
+const markovNum = process.argv[2]
+const markov = require(`./markov${markovNum}.json`)
 
 const pickNextWord = prev => {
   const selector = Math.random()
@@ -38,7 +35,7 @@ const generateSentence = prev => {
   res[res.length - 1][res[res.length - 1].length - 1] !== `?`){
     res.push(endSentence(markov[res.slice(-markovNum).join(` `)]))
   }
-  return prev ? res.slice(3).join(` `) : res.join(` `)
+  return prev ? res.slice(markovNum).join(` `) : res.join(` `)
 }
 
 const generateQuoteBySentences = length => {
