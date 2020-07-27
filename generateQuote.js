@@ -38,7 +38,7 @@ const generateQuoteByWords = quoteWordCount => {
 }
 
 const markovNum = process.argv[2]
-const markovChainFilePath = `./markov${markovNum}.json`
+const markovChainFilePath = `./jsResources/markov${markovNum}.json`
 if (!fs.existsSync(markovChainFilePath)) {
   console.error(`markovNum (first arg) must point to a valid markov chain file: was ${markovNum}`)
   process.exit(9)

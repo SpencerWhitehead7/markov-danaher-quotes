@@ -72,10 +72,10 @@ const saveMarkovs = upToMarkovNum => {
     wordsPerSentence: words.length / sentences.length,
   }
   console.log(metadata)
-  fs.writeFileSync(`markovMetadata.json`, JSON.stringify(metadata), `utf8`)
+  fs.writeFileSync(`jsResources/markovMetadata.json`, JSON.stringify(metadata), `utf8`)
 
   for (let i = 1; i <= upToMarkovNum; i++) {
-    fs.writeFileSync(`markov${i}.json`, JSON.stringify(generateMarkov(i, words)), `utf8`)
+    fs.writeFileSync(`jsResources/markov${i}.json`, JSON.stringify(generateMarkov(i, words)), `utf8`)
   }
 }
 
