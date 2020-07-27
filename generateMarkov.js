@@ -1,32 +1,28 @@
 const fs = require(`fs`)
 
-const text = fs
-  .readFileSync(`./postTexts.txt`, `utf8`)
-  .replace(/\s+/g, ` `)
+const wordEndsSentence = word => word[word.length - 1] === `.` || word[word.length - 1] === `!` || word[word.length - 1] === `?`
 
 const generateFreqTable = num => {
-  const arr = text.split(` `)
+  const words = fs
+    .readFileSync(`./postTexts.txt`, `utf8`)
+    .replace(/\s+/g, ` `)
+    .split(` `)
+
   const freqTable = {sTaRt5pLzNoCoLl1s1oNs : {}}
 
-  for(let i = num; i < arr.length; i++){
-    const prev = arr.slice(i - num, i).join(` `)
-    const word = arr[i]
+  for(let i = num; i < words.length; i++){
+    const prev = words.slice(i - num, i).join(` `)
+    const word = words[i]
 
-    if(prev[prev.length - 1] === `.` || prev[prev.length - 1] === `!` || prev[prev.length - 1] === `?`){
-      const start = arr.slice(i, i + num).join(` `)
-      if(!freqTable.sTaRt5pLzNoCoLl1s1oNs[start]){
-        freqTable.sTaRt5pLzNoCoLl1s1oNs[start] = 1
-      }else{
-        freqTable.sTaRt5pLzNoCoLl1s1oNs[start]++
-      }
+    if(wordEndsSentence(prev)){
+      const start = words.slice(i, i + num).join(` `)
+      freqTable.sTaRt5pLzNoCoLl1s1oNs[start] = (freqTable.sTaRt5pLzNoCoLl1s1oNs[start] || 0) + 1
     }
 
     if(!freqTable[prev]){
       freqTable[prev] = {[word] : 1}
-    }else if(!freqTable[prev][word]){
-      freqTable[prev][word] = 1
     }else{
-      freqTable[prev][word]++
+      freqTable[prev][word] = (freqTable[prev][word] || 0) + 1
     }
   }
 
@@ -34,13 +30,9 @@ const generateFreqTable = num => {
 }
 
 const freqToMarkov = freqTable => {
-  Object.keys(freqTable).forEach(word => {
-    const rootWord = freqTable[word]
+  Object.values(freqTable).forEach(rootWord => {
     const nextWords = Object.keys(rootWord)
-    const endWords = nextWords.filter(nextWord => {
-      const lastChar = nextWord[nextWord.length - 1]
-      return lastChar === `.` || lastChar === `!` || lastChar === `?`
-    })
+    const endWords = nextWords.filter(wordEndsSentence)
 
     if(endWords.length > 0){
       rootWord.eNd5pLzNoCoL11s1oNs = {}
