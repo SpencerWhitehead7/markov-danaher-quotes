@@ -1,25 +1,10 @@
 const fs = require(`fs`)
 
-const text = fs.readFileSync(`cleanDanaherPosts.txt`, `utf8`)
+const allSentences = fs
+  .readFileSync(`postTexts.txt`, `utf8`)
+  .replace(/\s+/g, ` `)
+  .split(/[.!?]+/)
 
-const mostSentences = text.split(`.`)
-
-const allSentences = []
-
-mostSentences.forEach(sentence => {
-  if(sentence.includes(`!`)){
-    allSentences.push(...sentence.split(`!`))
-  }else if(sentence.includes(`?`)){
-    allSentences.push(...sentence.split(`?`))
-  }else{
-    allSentences.push(sentence)
-  }
-})
-
-let totalWords = 0
-
-allSentences.forEach(sentence => {
-  totalWords += sentence.split(` `).length
-})
+const totalWords = allSentences.reduce((words, sentence) => words + sentence.split(` `).length, 0)
 
 console.log(totalWords / allSentences.length)
