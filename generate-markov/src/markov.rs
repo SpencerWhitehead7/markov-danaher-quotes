@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fs;
+use std::thread;
 
 use serde_cbor;
 
@@ -87,11 +88,18 @@ fn freq_table_to_markov(freq_table: FreqTable) -> MarkovChain {
 }
 
 pub fn generate(text: &str, max_markov_num: usize) {
+  let mut children = vec![];
   for markov_num in 1..=max_markov_num {
-    serde_cbor::to_writer(
-      fs::File::create(format!("rsResources/markov{}", markov_num)).unwrap(),
-      &freq_table_to_markov(words_to_freq_table(&text, markov_num)),
-    )
-    .unwrap();
+    let local_text = text.to_string();
+    children.push(thread::spawn(move || {
+      serde_cbor::to_writer(
+        fs::File::create(format!("rsResources/markov{}", markov_num)).unwrap(),
+        &freq_table_to_markov(words_to_freq_table(&local_text, markov_num)),
+      )
+      .unwrap();
+    }))
+  }
+  for child in children {
+    child.join().unwrap()
   }
 }
