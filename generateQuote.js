@@ -1,62 +1,43 @@
 const markovNum = process.argv[2]
 const markov = require(`./markov${markovNum}.json`)
 
-const pickNextWord = prev => {
+const { STARTS, ENDS } = require('./constants')
+
+const isEndOfSentence = word =>
+  word[word.length - 1] === `.` ||
+  word[word.length - 1] === `!` ||
+  word[word.length - 1] === `?`
+
+const pickNextWord = wordNode => {
   const selector = Math.random()
-  const nextWords = Object.keys(prev).filter(key => key !== `eNd5pLzNoCoL11s1oNs`)
-  for(let i = 0; i < nextWords.length; i++){
-    if(selector >= prev[nextWords[i]][0] && selector < prev[nextWords[i]][1]) return nextWords[i]
+  const nextWords = Object.keys(wordNode).filter(key => key !== ENDS)
+  for (let i = 0; i < nextWords.length; i++) {
+    const [lowerBound, upperBound] = wordNode[nextWords[i]]
+    if (lowerBound <= selector && selector < upperBound) return nextWords[i]
   }
   return ``
 }
 
-const endSentence = prev => {
-  const endWordsObj = prev.eNd5pLzNoCoL11s1oNs
-  if(!endWordsObj){
-    return pickNextWord(prev)
-  }else{
-    const endWords = Object.keys(prev.eNd5pLzNoCoL11s1oNs)
-    const selector = Math.random()
-    for(let i = 0; i < endWords.length; i++){
-      if(selector >= endWordsObj[endWords[i]][0] && selector < endWordsObj[endWords[i]][1]) return endWords[i]
+const generateQuoteBySentences = quoteSentenceCount => {
+  const quote = pickNextWord(markov[STARTS]).split(` `)
+  for (let sI = 0; sI < quoteSentenceCount; sI++) {
+    for (let wI = 0; wI < 24; wI++) {
+      quote.push(pickNextWord(markov[quote.slice(-markovNum).join(` `)]))
     }
-    return ``
+    while (!isEndOfSentence(quote[quote.length - 1])) {
+      const prevWordNode = markov[quote.slice(-markovNum).join(` `)]
+      quote.push(pickNextWord(prevWordNode[ENDS] ? prevWordNode[ENDS] : prevWordNode))
+    }
   }
+  return quote.join(` `)
 }
 
-const generateSentence = prev => {
-  const res = prev ? prev : pickNextWord(markov.sTaRt5pLzNoCoLl1s1oNs).split(` `)
-  const length = 24
-  for(let i = markovNum; i < length; i++){
-    res.push(pickNextWord(markov[res.slice(-markovNum).join(` `)]))
+const generateQuoteByWords = quoteWordCount => {
+  const quote = pickNextWord(markov[STARTS]).split(` `)
+  for (let i = markovNum; i < quoteWordCount; i++) {
+    quote.push(pickNextWord(markov[quote.slice(-markovNum).join(` `)]))
   }
-  while(res[res.length - 1][res[res.length - 1].length - 1] !== `.` &&
-  res[res.length - 1][res[res.length - 1].length - 1] !== `!` &&
-  res[res.length - 1][res[res.length - 1].length - 1] !== `?`){
-    res.push(endSentence(markov[res.slice(-markovNum).join(` `)]))
-  }
-  return prev ? res.slice(markovNum).join(` `) : res.join(` `)
+  return quote.join(` `)
 }
 
-const generateQuoteBySentences = length => {
-  let count = 1
-  const sentences = [generateSentence()]
-  while(count < length){
-    const prev = sentences[sentences.length - 1].split(` `).slice(-markovNum)
-    sentences.push(generateSentence(prev))
-    count++
-  }
-  return sentences.join(` `)
-}
-
-const generateQuoteByWords = length => {
-  const res = pickNextWord(markov.sTaRt5pLzNoCoLl1s1oNs).split(` `)
-  for(let i = markovNum; i < length; i++){
-    res.push(pickNextWord(markov[res.slice(-markovNum).join(` `)]))
-  }
-  return res.join(` `)
-}
-
-const quote = generateQuoteBySentences(2)
-
-console.log(quote)
+console.log(generateQuoteBySentences(2))

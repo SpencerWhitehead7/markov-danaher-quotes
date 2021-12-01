@@ -1,54 +1,51 @@
 const fs = require(`fs`)
 
-const text = fs
+const { STARTS, ENDS } = require(`./constants`)
+
+const words = fs
   .readFileSync(`./postTexts.txt`, `utf8`)
   .replace(/\s+/g, ` `)
+  .split(` `)
 
-const generateFreqTable = num => {
-  const arr = text.split(` `)
-  const freqTable = {sTaRt5pLzNoCoLl1s1oNs : {}}
+const isEndOfSentence = word =>
+  word[word.length - 1] === `.` ||
+  word[word.length - 1] === `!` ||
+  word[word.length - 1] === `?`
 
-  for(let i = num; i < arr.length; i++){
-    const prev = arr.slice(i - num, i).join(` `)
-    const word = arr[i]
+const wordsToFreqTable = markovNum => {
+  const freqTable = { [STARTS]: {} }
 
-    if(prev[prev.length - 1] === `.` || prev[prev.length - 1] === `!` || prev[prev.length - 1] === `?`){
-      const start = arr.slice(i, i + num).join(` `)
-      if(!freqTable.sTaRt5pLzNoCoLl1s1oNs[start]){
-        freqTable.sTaRt5pLzNoCoLl1s1oNs[start] = 1
-      }else{
-        freqTable.sTaRt5pLzNoCoLl1s1oNs[start]++
-      }
+  for (let i = markovNum; i < words.length; i++) {
+    const prev = words.slice(i - markovNum, i).join(` `)
+    const word = words[i]
+
+    if (isEndOfSentence(prev)) {
+      const start = words.slice(i, i + markovNum).join(` `)
+      freqTable[STARTS][start] = (freqTable[STARTS][start] || 0) + 1
     }
 
-    if(!freqTable[prev]){
-      freqTable[prev] = {[word] : 1}
-    }else if(!freqTable[prev][word]){
-      freqTable[prev][word] = 1
-    }else{
-      freqTable[prev][word]++
+    if (freqTable[prev]) {
+      freqTable[prev][word] = (freqTable[prev][word] || 0) + 1
+    } else {
+      freqTable[prev] = { [word]: 1 }
     }
   }
 
   return freqTable
 }
 
-const freqToMarkov = freqTable => {
-  Object.keys(freqTable).forEach(word => {
-    const rootWord = freqTable[word]
+const freqTableToMarkov = freqTable => {
+  Object.values(freqTable).forEach(rootWord => {
     const nextWords = Object.keys(rootWord)
-    const endWords = nextWords.filter(nextWord => {
-      const lastChar = nextWord[nextWord.length - 1]
-      return lastChar === `.` || lastChar === `!` || lastChar === `?`
-    })
+    const endWords = nextWords.filter(isEndOfSentence)
 
-    if(endWords.length > 0){
-      rootWord.eNd5pLzNoCoL11s1oNs = {}
+    if (endWords.length > 0) {
+      rootWord[ENDS] = {}
       const sum = endWords.reduce((acc, curr) => acc + rootWord[curr], 0)
       let lowerBound = 0
       endWords.forEach(endWord => {
         const upperBound = lowerBound + (rootWord[endWord] / sum)
-        rootWord.eNd5pLzNoCoL11s1oNs[endWord] = [lowerBound, upperBound]
+        rootWord[ENDS][endWord] = [lowerBound, upperBound]
         lowerBound = upperBound
       })
     }
@@ -65,12 +62,11 @@ const freqToMarkov = freqTable => {
   return freqTable
 }
 
-const generateMarkov = markovNum => freqToMarkov(generateFreqTable(markovNum))
+const generateMarkov = markovNum => freqTableToMarkov(wordsToFreqTable(markovNum))
 
 const saveMarkovs = upToMarkovNum => {
-  for(let i = 1; i <= upToMarkovNum; i++){
-    const markov = JSON.stringify(generateMarkov(i))
-    fs.writeFileSync(`markov${i}.json`, markov, `utf8`)
+  for (let i = 1; i <= upToMarkovNum; i++) {
+    fs.writeFileSync(`markov${i}.json`, JSON.stringify(generateMarkov(i)), `utf8`)
   }
 }
 
