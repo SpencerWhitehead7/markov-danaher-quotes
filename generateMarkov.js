@@ -1,7 +1,5 @@
 const fs = require(`fs`)
 
-const { STARTS, ENDS } = require(`./constants`)
-
 const words = fs
   .readFileSync(`./postTexts.txt`, `utf8`)
   .replace(/\s+/g, ` `)
@@ -13,52 +11,55 @@ const isEndOfSentence = word =>
   word[word.length - 1] === `?`
 
 const wordsToFreqTable = markovNum => {
-  const freqTable = { [STARTS]: {} }
+  const BEGIN = {
+    QUOTE: {
+      [words.slice(0, markovNum).join(` `)]: 1,
+    },
+  }
+  const MIDDLE = {}
+  const END = {}
 
   for (let i = markovNum; i < words.length; i++) {
     const prev = words.slice(i - markovNum, i).join(` `)
     const word = words[i]
 
-    if (isEndOfSentence(prev)) {
-      const start = words.slice(i, i + markovNum).join(` `)
-      freqTable[STARTS][start] = (freqTable[STARTS][start] || 0) + 1
+    if (isEndOfSentence(word)) {
+      if (i !== words.length - 1) {
+        const nextSentenceStart = words.slice(i + 1, i + 1 + markovNum).join(` `)
+        BEGIN.QUOTE[nextSentenceStart] = (BEGIN.QUOTE[nextSentenceStart] || 0) + 1
+      }
+
+      if (END[prev]) {
+        END[prev][word] = (END[prev][word] || 0) + 1
+      } else {
+        END[prev] = { [word]: 1 }
+      }
     }
 
-    if (freqTable[prev]) {
-      freqTable[prev][word] = (freqTable[prev][word] || 0) + 1
+    if (MIDDLE[prev]) {
+      MIDDLE[prev][word] = (MIDDLE[prev][word] || 0) + 1
     } else {
-      freqTable[prev] = { [word]: 1 }
+      MIDDLE[prev] = { [word]: 1 }
     }
   }
 
-  return freqTable
+  return { BEGIN, MIDDLE, END }
 }
 
 const freqTableToMarkov = freqTable => {
-  Object.values(freqTable).forEach(rootWord => {
-    const nextWords = Object.keys(rootWord)
-    const endWords = nextWords.filter(isEndOfSentence)
+  Object.values(freqTable).forEach(root => {
+    Object.values(root).forEach(rootWord => {
+      const nextWords = Object.keys(rootWord)
 
-    if (endWords.length > 0) {
-      rootWord[ENDS] = {}
-      const sum = endWords.reduce((acc, curr) => acc + rootWord[curr], 0)
+      const sum = nextWords.reduce((acc, curr) => acc + rootWord[curr], 0)
       let lowerBound = 0
-      endWords.forEach(endWord => {
-        const upperBound = lowerBound + (rootWord[endWord] / sum)
-        rootWord[ENDS][endWord] = [lowerBound, upperBound]
+      nextWords.forEach(nextWord => {
+        const upperBound = lowerBound + (rootWord[nextWord] / sum)
+        rootWord[nextWord] = [lowerBound, upperBound]
         lowerBound = upperBound
       })
-    }
-
-    const sum = nextWords.reduce((acc, curr) => acc + rootWord[curr], 0)
-    let lowerBound = 0
-    nextWords.forEach(nextWord => {
-      const upperBound = lowerBound + (rootWord[nextWord] / sum)
-      rootWord[nextWord] = [lowerBound, upperBound]
-      lowerBound = upperBound
     })
   })
-
   return freqTable
 }
 
