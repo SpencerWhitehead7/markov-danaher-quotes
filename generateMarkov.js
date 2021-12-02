@@ -1,10 +1,5 @@
 const fs = require(`fs`)
 
-const words = fs
-  .readFileSync(`./postTexts.txt`, `utf8`)
-  .replace(/\s+/g, ` `)
-  .split(` `)
-
 const isEndOfSentence = word =>
   word[word.length - 1] === `.` ||
   word[word.length - 1] === `!` ||
@@ -71,4 +66,21 @@ const saveMarkovs = upToMarkovNum => {
   }
 }
 
-saveMarkovs(5)
+const upToMarkovNum = process.argv[2]
+if (upToMarkovNum < 1 || upToMarkovNum > 10) {
+  console.error(`upToMarkovNum (first arg) must be a number between 1 and 10: was ${upToMarkovNum}`)
+  process.exit(9)
+}
+
+const inputTextFilePath = process.argv[3]
+if (!fs.existsSync(inputTextFilePath)) {
+  console.error(`inputFile (second arg) must be a valid path to utf8 file: was ${inputTextFilePath}`)
+  process.exit(9)
+}
+
+const words = fs
+  .readFileSync(inputTextFilePath, `utf8`)
+  .replace(/\s+/g, ` `)
+  .split(` `)
+
+saveMarkovs(upToMarkovNum)
