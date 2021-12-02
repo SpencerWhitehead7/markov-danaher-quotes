@@ -5,7 +5,7 @@ const isEndOfSentence = word =>
   word[word.length - 1] === `!` ||
   word[word.length - 1] === `?`
 
-const wordsToFreqTable = markovNum => {
+const wordsToFreqTable = (markovNum, words) => {
   const BEGIN = {
     QUOTE: {
       [words.slice(0, markovNum).join(` `)]: 1,
@@ -58,11 +58,24 @@ const freqTableToMarkov = freqTable => {
   return freqTable
 }
 
-const generateMarkov = markovNum => freqTableToMarkov(wordsToFreqTable(markovNum))
+const generateMarkov = (markovNum, words) => freqTableToMarkov(wordsToFreqTable(markovNum, words))
 
 const saveMarkovs = upToMarkovNum => {
+  const inputText = fs.readFileSync(inputTextFilePath, `utf8`).replace(/\s+/g, ` `)
+
+  const words = inputText.split(` `)
+  const sentences = inputText.split(/[.!?]+/)
+
+  const metadata = {
+    wordCount: words.length,
+    sentenceCount: sentences.length,
+    wordsPerSentence: words.length / sentences.length,
+  }
+  console.log(metadata)
+  fs.writeFileSync(`markovMetadata.json`, JSON.stringify(metadata), `utf8`)
+
   for (let i = 1; i <= upToMarkovNum; i++) {
-    fs.writeFileSync(`markov${i}.json`, JSON.stringify(generateMarkov(i)), `utf8`)
+    fs.writeFileSync(`markov${i}.json`, JSON.stringify(generateMarkov(i, words)), `utf8`)
   }
 }
 
@@ -77,10 +90,5 @@ if (!fs.existsSync(inputTextFilePath)) {
   console.error(`inputFile (second arg) must be a valid path to utf8 file: was ${inputTextFilePath}`)
   process.exit(9)
 }
-
-const words = fs
-  .readFileSync(inputTextFilePath, `utf8`)
-  .replace(/\s+/g, ` `)
-  .split(` `)
 
 saveMarkovs(upToMarkovNum)
