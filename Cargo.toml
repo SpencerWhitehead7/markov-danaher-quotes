@@ -3,4 +3,5 @@
 members = [
   "generate-markov",
   "generate-quote",
+  "generate-quote-lambda",
 ]
