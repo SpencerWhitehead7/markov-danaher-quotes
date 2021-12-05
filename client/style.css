@@ -1,0 +1,143 @@
+html {
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+  height: 100%;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#bg {
+  position: fixed;
+  background-image: url("pageImages/bg.webp");
+  opacity: .2;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  z-index: -1;
+}
+
+header {
+  text-align: center;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+footer {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+
+button {
+  position: relative;
+  overflow: hidden;
+  color: #FFFFFF;
+  background-color: darkblue;
+  font-size: 1.5rem;
+  padding: 1rem 2rem;
+  outline: 0;
+  border: 0;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  background-position: center;
+  transition: background .8s;
+}
+button:hover {
+  background: blue radial-gradient(circle, transparent 1%, red 1%) center/11000%;
+  filter: drop-shadow(0.25rem, 0, black)
+}
+button:active {
+  background-color: darkblue;
+  background-size: 100%;
+  transition: background 0s;
+}
+
+.white-background {
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+/* Instagram tile styles */
+
+#insta {
+  display: none;
+  height: 512px;
+  border: 1px solid #eeeeef;
+}
+
+#insta__image-container {
+  background-color: black;
+  height: 100%;
+}
+
+#insta__image {
+  height: 100%
+}
+
+#insta__text-container {
+  background-color: #ffffff;
+  height: 100%;
+  padding: 1rem;
+}
+
+#insta__profile {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+}
+
+#insta__caption {
+  height: 274px;
+  width: 287px;
+  overflow-y: scroll;
+  font-size: 0.75rem;
+  border-top: 1px solid #eeeeef;
+  border-bottom: 1px solid #eeeeef;
+}
+
+#insta__likes {
+  font-size: 0.75rem;
+  margin: 0.5rem;
+}
+
+#insta__timestamp {
+  color: #989898;
+  font-size: 0.75rem;
+  margin: 0.5rem;
+}
+
+#insta__login-section {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  padding: 1rem 0;
+  border-top: 1px solid #eeeeef;
+}
+
+#insta__login-copy {
+  color:#9b9b9b;
+}
+
+#insta__login-link {
+  color:#1c2c6c;
+  text-decoration: none;
+}

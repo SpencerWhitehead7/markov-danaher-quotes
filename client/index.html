@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Danaher Instagram Generator</title>
+  <meta name="description" content="A John Danaher Instagram post generator based on a markov chain" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="pageImages/favicon.webp" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="stylesheet" type="font/woff2" href="https://fonts.googleapis.com/css?family=Montserrat" />
+  <script type="text/javascript" src="app.js" defer></script>
+</head>
+
+<body>
+
+  <div id="bg"></div>
+
+  <header>
+    <h1 class="white-background">
+      John Danaher Procedural Instagram Generator
+    </h1>
+
+    <button id="generate-quote">
+      Put some wisdom on me!
+    </button>
+  </header>
+
+  <main>
+    <div id="insta">
+
+      <div id="insta__image-container">
+        <img src="pageImages/bg.webp" alt="image from John Danaher's Instagram" id="insta__image" />
+      </div>
+
+      <div id="insta__text-container">
+        <div id="insta__profile">
+          <a href="https://www.instagram.com/danaherjohn/">
+            <img src="pageImages/profile.webp" alt="danaherjohn profile picture" />
+          </a>
+          <b>&nbsp;&nbsp;danaherjohn&nbsp;&nbsp;</b>
+          <img src="pageImages/verified.webp" alt="verified checkmark" />
+          <b>&nbsp;&nbsp;•&nbsp;&nbsp;</b>
+          <b style="color:#3897f0;">Follow</b>
+        </div>
+
+        <div id="insta__caption"></div>
+
+        <div>
+          <img src="pageImages/instaicons.webp" alt="inactive Instagram icons" />
+          <p><b id="insta__likes"></b></p>
+          <p id="insta__timestamp"></p>
+          <div id="insta__login-section">
+            <span id="insta__login-copy">
+              <a href="https://www.instagram.com/" id="insta__login-link">Log in</a> to like or comment
+            </span>
+            <img src="pageImages/dotdotdot.webp" alt="dotdotdot">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <a class="white-background" href="https://github.com/SpencerWhitehead7/markov-danaher-quotes">
+      What am I looking at?
+    </a>
+  </footer>
+
+</body>
+
+</html>
