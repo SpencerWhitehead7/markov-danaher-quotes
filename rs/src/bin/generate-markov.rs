@@ -2,7 +2,7 @@ use std::env;
 use std::fs;
 use std::path;
 
-use markov_danaher_quotes::{generate_markovs, generate_metadata};
+use markov_danaher_quotes::generate_markovs;
 
 fn main() {
   let up_to_markov_num_input = &env::args().nth(1).unwrap();
@@ -13,5 +13,4 @@ fn main() {
   let text = fs::read_to_string(input_text_file_path).unwrap();
 
   generate_markovs(&text, up_to_markov_num);
-  generate_metadata(&text);
 }

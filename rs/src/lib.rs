@@ -92,10 +92,34 @@ fn freq_table_to_markov(freq_table: FreqTable) -> MarkovChain {
   markov
 }
 
+fn generate_metadata(text: &str) -> HashMap<&str, usize> {
+  let word_count = text.split_whitespace().count();
+  let sentence_count = text.split(&['.', '!', '?'][..]).count();
+
+  HashMap::from([
+    ("wordCount", word_count),
+    ("sentenceCount", sentence_count),
+    ("wordsPerSentence", word_count / sentence_count),
+  ])
+}
+
 pub fn generate_markovs(text: &str, max_markov_num: usize) {
-  let mut children = vec![];
+  let local_text = text.to_string();
+  let mut children = vec![thread::spawn(move || {
+    let metadata = generate_metadata(&local_text);
+
+    println!("{:?}", metadata);
+
+    serde_cbor::to_writer(
+      fs::File::create("../rsResources/markovMetadata").unwrap(),
+      &metadata,
+    )
+    .unwrap()
+  })];
+
   for markov_num in 1..=max_markov_num {
     let local_text = text.to_string();
+
     children.push(thread::spawn(move || {
       serde_cbor::to_writer(
         fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap(),
@@ -104,27 +128,10 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
       .unwrap();
     }))
   }
+
   for child in children {
     child.join().unwrap()
   }
-}
-
-pub fn generate_metadata(text: &str) {
-  let total_words = text.split_whitespace().count() as f32;
-  let total_sentences = text.split(&['.', '!', '?'][..]).count() as f32;
-
-  let metadata = HashMap::from([
-    ("wordCount", total_words),
-    ("sentenceCount", total_sentences),
-    ("wordsPerSentence", total_words / total_sentences),
-  ]);
-
-  println!("{:?}", metadata);
-  serde_cbor::to_writer(
-    fs::File::create("rsResources/markovMetadata").unwrap(),
-    &metadata,
-  )
-  .unwrap();
 }
 
 fn pick_next_word(word_node: &MarkovChainBranch) -> &str {
