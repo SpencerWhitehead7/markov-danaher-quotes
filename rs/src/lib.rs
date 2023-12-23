@@ -2,9 +2,6 @@ use std::collections::HashMap;
 use std::fs;
 use std::thread;
 
-use rand;
-use serde_cbor;
-
 fn is_end_of_sentence(word: &str) -> bool {
   let last_letter = match word.chars().last() {
     Some(letter) => letter,
@@ -110,9 +107,9 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
 
     println!("{:?}", metadata);
 
-    serde_cbor::to_writer(
-      fs::File::create("../rsResources/markovMetadata").unwrap(),
+    ciborium::into_writer(
       &metadata,
+      fs::File::create("../rsResources/markovMetadata").unwrap(),
     )
     .unwrap()
   })];
@@ -121,9 +118,9 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
     let local_text = text.to_string();
 
     children.push(thread::spawn(move || {
-      serde_cbor::to_writer(
-        fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap(),
+      ciborium::into_writer(
         &freq_table_to_markov(words_to_freq_table(&local_text, markov_num)),
+        fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap(),
       )
       .unwrap();
     }))
