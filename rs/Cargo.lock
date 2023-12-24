@@ -64,6 +64,8 @@ version = "0.1.0"
 dependencies = [
  "ciborium",
  "rand",
+ "serde",
+ "serde_derive",
 ]
 
 [[package]]
