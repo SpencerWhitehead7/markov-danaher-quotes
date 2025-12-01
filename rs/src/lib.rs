@@ -65,7 +65,7 @@ impl FreqTable {
 
 type MarkovChainBranch = HashMap<String, (f32, f32)>;
 type MarkovChainTrunk = HashMap<String, MarkovChainBranch>;
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct MarkovChain {
   num: usize,
 

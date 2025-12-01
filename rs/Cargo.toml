@@ -2,16 +2,15 @@
 name = "markov-danaher-quotes"
 version = "0.1.0"
 authors = ["Spencer Whitehead <SpencerWhitehead7@gmail.com>"]
-edition = "2021"
+edition = "2024"
 license = "Unlicense"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ciborium = "0.2.1"
-lambda_runtime = "0.9.0"
-lazy_static = "1.4.0"
-rand = "0.8.5"
-serde = "1.0.193"
-serde_derive = "1.0.193"
-tokio = "1.35.1"
+ciborium = "0.2.2"
+lambda_runtime = "1.0.1"
+lazy_static = "1.5.0"
+rand = "0.9.2"
+serde = "1.0.228"
+tokio = "1.48.0"
