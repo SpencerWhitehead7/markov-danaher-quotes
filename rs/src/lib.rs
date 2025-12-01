@@ -160,9 +160,12 @@ impl MarkovChain {
   }
 }
 
-fn generate_metadata(text: &str) -> HashMap<&str, usize> {
-  let word_count = text.split_whitespace().count();
-  let sentence_count = text.split(&['.', '!', '?'][..]).count();
+fn generate_metadata(normalized_text: &str) -> HashMap<&str, usize> {
+  let word_count = normalized_text.split(" ").count();
+  let sentence_count = regex::Regex::new(r"[.!?]+")
+    .unwrap()
+    .split(normalized_text)
+    .count();
 
   HashMap::from([
     ("wordCount", word_count),
@@ -172,9 +175,15 @@ fn generate_metadata(text: &str) -> HashMap<&str, usize> {
 }
 
 pub fn generate_markovs(text: &str, max_markov_num: usize) {
-  let local_text = text.to_string();
+  let normalized_text = regex::Regex::new(r"\s+")
+    .unwrap()
+    .replace_all(text, " ")
+    .trim()
+    .to_string();
+
+  let metadata_text = normalized_text.clone();
   let mut children = vec![thread::spawn(move || {
-    let metadata = generate_metadata(&local_text);
+    let metadata = generate_metadata(&metadata_text);
 
     println!("{:?}", metadata);
 
@@ -186,11 +195,11 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
   })];
 
   for markov_num in 1..=max_markov_num {
-    let local_text = text.to_string();
+    let markov_num_text = normalized_text.clone();
 
     children.push(thread::spawn(move || {
       ciborium::into_writer(
-        &MarkovChain::new(&local_text, markov_num),
+        &MarkovChain::new(&markov_num_text, markov_num),
         fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap(),
       )
       .unwrap();
