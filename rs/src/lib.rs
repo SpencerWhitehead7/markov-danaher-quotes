@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::fs;
-use std::thread;
 
 fn is_end_of_sentence(word: &str) -> bool {
   let last_letter = match word.chars().last() {
@@ -182,31 +181,23 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
     .to_string();
 
   let metadata_text = normalized_text.clone();
-  let mut children = vec![thread::spawn(move || {
-    let metadata = generate_metadata(&metadata_text);
+  let metadata = generate_metadata(&metadata_text);
 
-    println!("{:?}", metadata);
+  println!("{:?}", metadata);
 
-    ciborium::into_writer(
-      &metadata,
-      fs::File::create("../rsResources/markovMetadata").unwrap(),
-    )
-    .unwrap()
-  })];
+  ciborium::into_writer(
+    &metadata,
+    fs::File::create("../rsResources/markovMetadata").unwrap(),
+  )
+  .unwrap();
 
   for markov_num in 1..=max_markov_num {
     let markov_num_text = normalized_text.clone();
 
-    children.push(thread::spawn(move || {
-      ciborium::into_writer(
-        &MarkovChain::new(&markov_num_text, markov_num),
-        fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap(),
-      )
-      .unwrap();
-    }))
-  }
-
-  for child in children {
-    child.join().unwrap()
+    ciborium::into_writer(
+      &MarkovChain::new(&markov_num_text, markov_num),
+      fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap(),
+    )
+    .unwrap();
   }
 }
