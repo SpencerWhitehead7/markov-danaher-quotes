@@ -180,8 +180,7 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
     .trim()
     .to_string();
 
-  let metadata_text = normalized_text.clone();
-  let metadata = generate_metadata(&metadata_text);
+  let metadata = generate_metadata(&normalized_text);
 
   println!("{:?}", metadata);
 
@@ -192,10 +191,8 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
   .unwrap();
 
   for markov_num in 1..=max_markov_num {
-    let markov_num_text = normalized_text.clone();
-
     ciborium::into_writer(
-      &MarkovChain::new(&markov_num_text, markov_num),
+      &MarkovChain::new(&normalized_text, markov_num),
       fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap(),
     )
     .unwrap();
