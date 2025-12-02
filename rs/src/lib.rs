@@ -94,14 +94,15 @@ impl MarkovChain {
       let mut lower_bound = 0.0;
       markov_trunk.insert(
         root_word,
-        next_words
-          .keys()
-          .fold(MarkovChainBranch::new(), |mut acc, curr| {
-            let upper_bound = lower_bound + (next_words[curr] / sum);
-            acc.insert(curr.to_string(), (lower_bound, upper_bound));
+        next_words.iter().fold(
+          MarkovChainBranch::new(),
+          |mut acc, (curr_key, curr_value)| {
+            let upper_bound = lower_bound + (curr_value / sum);
+            acc.insert(curr_key.to_string(), (lower_bound, upper_bound));
             lower_bound = upper_bound;
             acc
-          }),
+          },
+        ),
       );
     }
 

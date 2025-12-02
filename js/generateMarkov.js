@@ -44,12 +44,10 @@ const wordsToFreqTable = (markovNum, words) => {
 const freqTableToMarkov = freqTable => {
   Object.values(freqTable).forEach(root => {
     Object.values(root).forEach(rootWord => {
-      const nextWords = Object.keys(rootWord)
-
-      const sum = nextWords.reduce((acc, curr) => acc + rootWord[curr], 0)
+      const sum = Object.values(rootWord).reduce((acc, curr) => acc + curr, 0)
       let lowerBound = 0
-      nextWords.forEach(nextWord => {
-        const upperBound = lowerBound + (rootWord[nextWord] / sum)
+      Object.entries(rootWord).forEach(([nextWord, nextCount]) => {
+        const upperBound = lowerBound + (nextCount / sum)
         rootWord[nextWord] = [lowerBound, upperBound]
         lowerBound = upperBound
       })
@@ -74,10 +72,10 @@ const saveMarkovs = upToMarkovNum => {
     wordsPerSentence: words.length / sentences.length,
   }
   console.log(metadata)
-  fs.writeFileSync(`jsResources/markovMetadata.json`, JSON.stringify(metadata), `utf8`)
+  fs.writeFileSync(`../jsResources/markovMetadata.json`, JSON.stringify(metadata), `utf8`)
 
   for (let i = 1; i <= upToMarkovNum; i++) {
-    fs.writeFileSync(`jsResources/markov${i}.json`, JSON.stringify(generateMarkov(i, words)), `utf8`)
+    fs.writeFileSync(`../jsResources/markov${i}.json`, JSON.stringify(generateMarkov(i, words)), `utf8`)
   }
 }
 
