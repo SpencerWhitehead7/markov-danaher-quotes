@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fs;
+use std::io;
 
 fn is_end_of_sentence(word: &str) -> bool {
   let last_letter = match word.chars().last() {
@@ -193,7 +194,7 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
   for markov_num in 1..=max_markov_num {
     ciborium::into_writer(
       &MarkovChain::new(&normalized_text, markov_num),
-      fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap(),
+      io::BufWriter::new(fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap()),
     )
     .unwrap();
   }
