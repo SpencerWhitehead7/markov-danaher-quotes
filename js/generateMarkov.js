@@ -60,11 +60,10 @@ const generateMarkov = (markovNum, words) => freqTableToMarkov(wordsToFreqTable(
 
 const saveMarkovs = upToMarkovNum => {
   const text = fs.readFileSync(inputTextFilePath, `utf8`)
-    .replace(/\s+/g, ` `)
-    .trim()
+  const normalizedText = text.replace(/\s+/g, ` `).trim()
 
-  const words = text.split(` `)
-  const sentences = text.split(/[.!?]+/)
+  const words = normalizedText.split(` `)
+  const sentences = normalizedText.split(/[.!?]+/)
 
   const metadata = {
     wordCount: words.length,

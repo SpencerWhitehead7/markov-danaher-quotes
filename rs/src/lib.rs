@@ -21,9 +21,7 @@ struct FreqTable {
 }
 
 impl FreqTable {
-  fn new(text: &str, markov_num: usize) -> Self {
-    let words: Vec<&str> = text.split_whitespace().collect();
-
+  fn new(markov_num: usize, words: &Vec<&str>) -> Self {
     let mut begin = FreqTableTrunk::from([(
       "QUOTE".to_string(),
       HashMap::from([(words[0..markov_num].join(" "), 1.0)]),
@@ -75,11 +73,11 @@ pub struct MarkovChain {
 }
 
 impl MarkovChain {
-  pub fn new(text: &str, num: usize) -> Self {
-    let freq_table = FreqTable::new(text, num);
+  pub fn new(markov_num: usize, words: &Vec<&str>) -> Self {
+    let freq_table = FreqTable::new(markov_num, words);
 
     MarkovChain {
-      num,
+      num: markov_num,
       begin: Self::freq_table_trunk_to_markov_chain_trunk(freq_table.begin),
       middle: Self::freq_table_trunk_to_markov_chain_trunk(freq_table.middle),
       end: Self::freq_table_trunk_to_markov_chain_trunk(freq_table.end),
@@ -161,20 +159,6 @@ impl MarkovChain {
   }
 }
 
-fn generate_metadata(normalized_text: &str) -> HashMap<&str, usize> {
-  let word_count = normalized_text.split(" ").count();
-  let sentence_count = regex::Regex::new(r"[.!?]+")
-    .unwrap()
-    .split(normalized_text)
-    .count();
-
-  HashMap::from([
-    ("wordCount", word_count),
-    ("sentenceCount", sentence_count),
-    ("wordsPerSentence", word_count / sentence_count),
-  ])
-}
-
 pub fn generate_markovs(text: &str, max_markov_num: usize) {
   let normalized_text = regex::Regex::new(r"\s+")
     .unwrap()
@@ -182,7 +166,17 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
     .trim()
     .to_string();
 
-  let metadata = generate_metadata(&normalized_text);
+  let words = normalized_text.split(" ").collect::<Vec<_>>();
+  let sentence_count = regex::Regex::new(r"[.!?]+")
+    .unwrap()
+    .split(&normalized_text)
+    .count();
+
+  let metadata = HashMap::from([
+    ("wordCount", words.len()),
+    ("sentenceCount", sentence_count),
+    ("wordsPerSentence", words.len() / sentence_count),
+  ]);
 
   println!("{:?}", metadata);
 
@@ -194,7 +188,7 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
 
   for markov_num in 1..=max_markov_num {
     ciborium::into_writer(
-      &MarkovChain::new(&normalized_text, markov_num),
+      &MarkovChain::new(markov_num, &words),
       io::BufWriter::new(fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap()),
     )
     .unwrap();
