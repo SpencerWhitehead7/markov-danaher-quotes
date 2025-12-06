@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::io;
+use std::mem;
 use std::path;
 
 use markov_danaher_quotes::generate_markovs;
@@ -29,4 +30,8 @@ fn main() {
     let w = io::BufWriter::new(output_file);
     ciborium::into_writer(mc, w).unwrap();
   });
+
+  // Prevent dropping/deallocating markov_chains - leak it for the process lifetime
+  // the OS will reclaim it on exit
+  mem::forget(markov_chains);
 }

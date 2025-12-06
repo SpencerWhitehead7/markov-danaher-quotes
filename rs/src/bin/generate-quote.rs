@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::io;
+use std::mem;
 
 use markov_danaher_quotes::MarkovChain;
 
@@ -19,4 +20,8 @@ fn main() {
   let quote = markov.generate_quote_by_sentences(sentence_count);
 
   println!("{}", quote);
+
+  // Prevent dropping/deallocating markov_chains - leak it for the process lifetime
+  // the OS will reclaim it on exit
+  mem::forget(markov);
 }
