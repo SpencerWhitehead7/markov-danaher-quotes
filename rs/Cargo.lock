@@ -456,7 +456,6 @@ dependencies = [
  "ciborium",
  "divan",
  "lambda_runtime",
- "lazy_static",
  "rand",
  "regex",
  "serde",
