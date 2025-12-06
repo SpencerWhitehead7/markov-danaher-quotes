@@ -16,12 +16,12 @@ The javascript implementation can run on any relatively recentish version of nod
 
 The rust implementation is a little tricker to build/run, because `quote-lambda` depends a file which is created by `generate-markov`. A pre-generated chain is included statically in `quote-lambda` to speed it up at runtime. You can run `cargo run -r --bin generate-markov 3 ../input.txt` to build and run just `generate-markov` and create the file. After that, any compilation/running should work normally.
 
-To get `quoute-lambda` running in an AWS lambda, see the information [here](https://github.com/awslabs/aws-lambda-rust-runtime) (for source code reference) and [here](https://docs.aws.amazon.com/sdk-for-rust/latest/dg/lambda.html) (for build/deploy reference). I compiled it with [Cargo Lambda](https://www.cargo-lambda.info) `cargo lambda build --bin quote-lambda --release --output-format zip --arm64` and uploaded the zip through the aws console. It is currently running in a lambda with runtime `Amazon Linux 2023` and architecture `arm64`.
+To get `quote-lambda` running in an AWS lambda, see the information [here](https://github.com/awslabs/aws-lambda-rust-runtime) (for source code reference) and [here](https://docs.aws.amazon.com/sdk-for-rust/latest/dg/lambda.html) (for build/deploy reference). I compiled it with [Cargo Lambda](https://www.cargo-lambda.info) `cargo lambda build --bin quote-lambda --release --output-format zip --arm64` and uploaded the zip through the aws console. It is currently running in a lambda with runtime `Amazon Linux 2023` and architecture `arm64`.
 
 ## Future plans
 
-Every few months, I'd like to scrape all the new posts off social media and regenerate the markov chain with more data. The chain will get better at mimicking him the more he writes and the more data I can feed it, so maybe in ten years or so the chain will be able to write his posts for him and no one'll know the difference.
+Every few years, I'd like to scrape all the new posts off social media and regenerate the markov chain with more data. The chain will get better at mimicking him the more he writes and the more data I can feed it, so maybe in ten years or so the chain will be able to write his posts for him and no one'll know the difference.
 
 It would also be nice to fix up the sample site, especially so it looks less awful on mobile and relies less on literal screenshots of assets from Instagram.
 
-I've done the basic idea of a quote generator twice now (js and rs implementations), but it would be cool to do one with a radically different technology, like gen ai.
+I've done the basic idea of a quote generator twice now (js and rs implementations), but it would be cool to do one with a radically different technology, like a fine tuned llm.
