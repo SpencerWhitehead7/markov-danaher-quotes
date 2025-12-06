@@ -32,10 +32,8 @@ const newMarkov = (markovNum, words) => {
 
 const saveMarkovs = upToMarkovNum => {
   const text = fs.readFileSync(inputTextFilePath, `utf8`)
-  const normalizedText = text.replace(/\s+/g, ` `).trim()
-
-  const words = normalizedText.split(` `)
-  const sentences = normalizedText.split(/[.!?]+/)
+  const words = text.split(/\s+/)
+  const sentences = text.split(/[.!?]+/)
 
   const metadata = {
     wordCount: words.length,

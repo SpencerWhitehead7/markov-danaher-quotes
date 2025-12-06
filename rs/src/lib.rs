@@ -108,23 +108,21 @@ impl MarkovChain {
 pub fn generate_markovs(
   text: &str,
   max_markov_num: usize,
-) -> (HashMap<&str, usize>, Vec<MarkovChain>) {
-  let normalized_text = regex::Regex::new(r"\s+")
+) -> (HashMap<&str, f32>, Vec<MarkovChain>) {
+  let words = regex::Regex::new(r"\s+")
     .unwrap()
-    .replace_all(text, " ")
-    .trim()
-    .to_string();
+    .split(text)
+    .collect::<Vec<_>>();
 
-  let words = normalized_text.split(" ").collect::<Vec<_>>();
-  let sentence_count = regex::Regex::new(r"[.!?]+")
-    .unwrap()
-    .split(&normalized_text)
-    .count();
+  let sentence_count = regex::Regex::new(r"[.!?]+").unwrap().split(text).count();
 
   let metadata = HashMap::from([
-    ("wordCount", words.len()),
-    ("sentenceCount", sentence_count),
-    ("wordsPerSentence", words.len() / sentence_count),
+    ("wordCount", words.len() as f32),
+    ("sentenceCount", sentence_count as f32),
+    (
+      "wordsPerSentence",
+      words.len() as f32 / sentence_count as f32,
+    ),
   ]);
 
   let markov_chains: Vec<MarkovChain> = (1..=max_markov_num)
