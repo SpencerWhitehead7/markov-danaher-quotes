@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::thread;
 
 use rand::seq::IndexedRandom as _;
 
@@ -109,7 +110,7 @@ pub fn generate_markovs(
   text: &str,
   max_markov_num: usize,
 ) -> (HashMap<&str, f32>, Vec<MarkovChain>) {
-  let words = regex::Regex::new(r"\s+")
+  let words = &regex::Regex::new(r"\s+")
     .unwrap()
     .split(text)
     .collect::<Vec<_>>();
@@ -125,9 +126,14 @@ pub fn generate_markovs(
     ),
   ]);
 
-  let markov_chains: Vec<MarkovChain> = (1..=max_markov_num)
-    .map(|markov_num| MarkovChain::new(markov_num, &words))
-    .collect();
+  let markov_chains = thread::scope(|s| {
+    (1..=max_markov_num)
+      .map(|markov_num| s.spawn(move || MarkovChain::new(markov_num, words)))
+      .collect::<Vec<_>>()
+      .into_iter()
+      .map(|h| h.join().unwrap())
+      .collect::<Vec<_>>()
+  });
 
   (metadata, markov_chains)
 }

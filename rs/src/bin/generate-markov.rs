@@ -3,6 +3,7 @@ use std::fs;
 use std::io;
 use std::mem;
 use std::path;
+use std::thread;
 
 use markov_danaher_quotes::generate_markovs;
 
@@ -24,11 +25,22 @@ fn main() {
   )
   .unwrap();
 
-  markov_chains.iter().for_each(|mc| {
-    let output_file_path = format!("../rsResources/markov{}", mc.num);
-    let output_file = fs::File::create(output_file_path).unwrap();
-    let w = io::BufWriter::new(output_file);
-    ciborium::into_writer(mc, w).unwrap();
+  thread::scope(|s| {
+    markov_chains
+      .iter()
+      .map(|mc| {
+        s.spawn(move || {
+          let output_file_path = format!("../rsResources/markov{}", mc.num);
+          let output_file = fs::File::create(output_file_path).unwrap();
+          let w = io::BufWriter::new(output_file);
+
+          ciborium::into_writer(mc, w).unwrap()
+        })
+      })
+      .collect::<Vec<_>>()
+      .into_iter()
+      .map(|h| h.join().unwrap())
+      .collect::<Vec<_>>()
   });
 
   // Prevent dropping/deallocating markov_chains - leak it for the process lifetime
