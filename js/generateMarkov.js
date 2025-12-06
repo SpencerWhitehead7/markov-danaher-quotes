@@ -1,16 +1,12 @@
 const fs = require(`fs`)
 
 const isEndOfSentence = word =>
-  word[word.length - 1] === `.` ||
-  word[word.length - 1] === `!` ||
-  word[word.length - 1] === `?`
+  word.at(-1) === `.` ||
+  word.at(-1) === `!` ||
+  word.at(-1) === `?`
 
-const wordsToFreqTable = (markovNum, words) => {
-  const BEGIN = {
-    QUOTE: {
-      [words.slice(0, markovNum).join(` `)]: 1,
-    },
-  }
+const newMarkov = (markovNum, words) => {
+  const BEGIN = [words.slice(0, markovNum).join(` `)]
   const MIDDLE = {}
   const END = {}
 
@@ -20,43 +16,19 @@ const wordsToFreqTable = (markovNum, words) => {
 
     if (isEndOfSentence(word)) {
       if (i !== words.length - 1) {
-        const nextSentenceStart = words.slice(i + 1, i + 1 + markovNum).join(` `)
-        BEGIN.QUOTE[nextSentenceStart] = (BEGIN.QUOTE[nextSentenceStart] || 0) + 1
+        BEGIN.push(words.slice(i + 1, i + 1 + markovNum).join(` `))
       }
 
-      if (END[prev]) {
-        END[prev][word] = (END[prev][word] || 0) + 1
-      } else {
-        END[prev] = { [word]: 1 }
-      }
+      END[prev] ??= []
+      END[prev].push(word)
     }
 
-    if (MIDDLE[prev]) {
-      MIDDLE[prev][word] = (MIDDLE[prev][word] || 0) + 1
-    } else {
-      MIDDLE[prev] = { [word]: 1 }
-    }
+    MIDDLE[prev] ??= []
+    MIDDLE[prev].push(word)
   }
 
   return { BEGIN, MIDDLE, END }
 }
-
-const freqTableToMarkov = freqTable => {
-  Object.values(freqTable).forEach(root => {
-    Object.values(root).forEach(rootWord => {
-      const sum = Object.values(rootWord).reduce((acc, curr) => acc + curr, 0)
-      let lowerBound = 0
-      Object.entries(rootWord).forEach(([nextWord, nextCount]) => {
-        const upperBound = lowerBound + (nextCount / sum)
-        rootWord[nextWord] = [lowerBound, upperBound]
-        lowerBound = upperBound
-      })
-    })
-  })
-  return freqTable
-}
-
-const generateMarkov = (markovNum, words) => freqTableToMarkov(wordsToFreqTable(markovNum, words))
 
 const saveMarkovs = upToMarkovNum => {
   const text = fs.readFileSync(inputTextFilePath, `utf8`)
@@ -74,7 +46,7 @@ const saveMarkovs = upToMarkovNum => {
   fs.writeFileSync(`../jsResources/markovMetadata.json`, JSON.stringify(metadata), `utf8`)
 
   for (let i = 1; i <= upToMarkovNum; i++) {
-    fs.writeFileSync(`../jsResources/markov${i}.json`, JSON.stringify(generateMarkov(i, words)), `utf8`)
+    fs.writeFileSync(`../jsResources/markov${i}.json`, JSON.stringify(newMarkov(i, words)), `utf8`)
   }
 }
 

@@ -1,22 +1,17 @@
 const fs = require(`fs`)
 
 const isEndOfSentence = word =>
-  word[word.length - 1] === `.` ||
-  word[word.length - 1] === `!` ||
-  word[word.length - 1] === `?`
+  word.at(-1) === `.` ||
+  word.at(-1) === `!` ||
+  word.at(-1) === `?`
 
 const pickNextWord = wordNode => {
-  const selector = Math.random()
-  const nextWords = Object.keys(wordNode)
-  for (let i = 0; i < nextWords.length; i++) {
-    const [lowerBound, upperBound] = wordNode[nextWords[i]]
-    if (lowerBound <= selector && selector < upperBound) return nextWords[i]
-  }
-  return ``
+  const randomI = Math.floor(Math.random() * wordNode.length)
+  return wordNode[randomI]
 }
 
 const generateQuoteBySentences = quoteSentenceCount => {
-  const quote = pickNextWord(BEGIN.QUOTE).split(` `)
+  const quote = pickNextWord(BEGIN).split(` `)
   for (let sI = 0; sI < quoteSentenceCount; sI++) {
     for (let wI = 0; wI < sentenceLength - 1; wI++) {
       quote.push(pickNextWord(MIDDLE[quote.slice(-markovNum).join(` `)]))
@@ -30,7 +25,7 @@ const generateQuoteBySentences = quoteSentenceCount => {
 }
 
 const generateQuoteByWords = quoteWordCount => {
-  const quote = pickNextWord(BEGIN.QUOTE).split(` `)
+  const quote = pickNextWord(BEGIN).split(` `)
   for (let i = markovNum; i < quoteWordCount; i++) {
     quote.push(pickNextWord(MIDDLE[quote.slice(-markovNum).join(` `)]))
   }
@@ -56,9 +51,9 @@ let generationVersion = process.argv[4]
 let generationFunction
 if (generationVersion === undefined) {
   console.log(`generationMethod (third arg undefined: defaults to "sentence")`)
-  generationVersion = "sentence"
+  generationVersion = `sentence`
 }
-if (generationVersion === "sentence") {
+if (generationVersion === `sentence`) {
   generationFunction = generateQuoteBySentences
 } else if (generationVersion === "word") {
   generationFunction = generateQuoteByWords
@@ -68,7 +63,7 @@ if (generationVersion === "sentence") {
 }
 
 let sentenceLength
-if (generationVersion === "sentence") {
+if (generationVersion === `sentence`) {
   sentenceLength = process.argv[5]
   if (sentenceLength === undefined) {
     console.log(`sentenceLength (fourth arg) undefined: defaults to 17`)
