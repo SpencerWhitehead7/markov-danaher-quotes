@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-use std::fs;
-use std::io;
 
 use rand::seq::IndexedRandom as _;
 
@@ -8,7 +6,7 @@ type MarkovChainBranch = Vec<String>;
 type MarkovChainTrunk = HashMap<String, MarkovChainBranch>;
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct MarkovChain {
-  num: usize,
+  pub num: usize,
 
   begin: MarkovChainBranch,
   middle: MarkovChainTrunk,
@@ -107,7 +105,10 @@ impl MarkovChain {
   }
 }
 
-pub fn generate_markovs(text: &str, max_markov_num: usize) {
+pub fn generate_markovs(
+  text: &str,
+  max_markov_num: usize,
+) -> (HashMap<&str, usize>, Vec<MarkovChain>) {
   let normalized_text = regex::Regex::new(r"\s+")
     .unwrap()
     .replace_all(text, " ")
@@ -126,19 +127,9 @@ pub fn generate_markovs(text: &str, max_markov_num: usize) {
     ("wordsPerSentence", words.len() / sentence_count),
   ]);
 
-  println!("{:?}", metadata);
+  let markov_chains: Vec<MarkovChain> = (1..=max_markov_num)
+    .map(|markov_num| MarkovChain::new(markov_num, &words))
+    .collect();
 
-  ciborium::into_writer(
-    &metadata,
-    fs::File::create("../rsResources/markovMetadata").unwrap(),
-  )
-  .unwrap();
-
-  for markov_num in 1..=max_markov_num {
-    ciborium::into_writer(
-      &MarkovChain::new(markov_num, &words),
-      io::BufWriter::new(fs::File::create(format!("../rsResources/markov{}", markov_num)).unwrap()),
-    )
-    .unwrap();
-  }
+  (metadata, markov_chains)
 }

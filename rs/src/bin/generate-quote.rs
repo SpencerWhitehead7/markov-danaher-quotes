@@ -16,5 +16,7 @@ fn main() {
   let markov_reader = io::BufReader::new(markov_file);
   let markov: MarkovChain = ciborium::from_reader(markov_reader).unwrap();
 
-  println!("{}", markov.generate_quote_by_sentences(sentence_count));
+  let quote = markov.generate_quote_by_sentences(sentence_count);
+
+  println!("{}", quote);
 }

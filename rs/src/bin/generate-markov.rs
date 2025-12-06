@@ -1,5 +1,6 @@
 use std::env;
 use std::fs;
+use std::io;
 use std::path;
 
 use markov_danaher_quotes::generate_markovs;
@@ -12,5 +13,20 @@ fn main() {
   let input_text_file_path = path::Path::new(input_text_file_path_input);
   let text = fs::read_to_string(input_text_file_path).unwrap();
 
-  generate_markovs(&text, up_to_markov_num);
+  let (metadata, markov_chains) = generate_markovs(&text, up_to_markov_num);
+
+  println!("{:?}", metadata);
+
+  ciborium::into_writer(
+    &metadata,
+    fs::File::create("../rsResources/markovMetadata").unwrap(),
+  )
+  .unwrap();
+
+  markov_chains.iter().for_each(|mc| {
+    let output_file_path = format!("../rsResources/markov{}", mc.num);
+    let output_file = fs::File::create(output_file_path).unwrap();
+    let w = io::BufWriter::new(output_file);
+    ciborium::into_writer(mc, w).unwrap();
+  });
 }
