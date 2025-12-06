@@ -15,3 +15,10 @@ rand = "0.9.2"
 regex = "1.12.2"
 serde = "1.0.228"
 tokio = "1.48.0"
+
+[dev-dependencies]
+divan = "0.1.21"
+
+[[bench]]
+name = "markov"
+harness = false
