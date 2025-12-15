@@ -25,6 +25,6 @@ fn generate_quote(bencher: divan::Bencher) {
   let markov: MarkovChain = ciborium::from_reader(markov_reader).unwrap();
 
   bencher.bench_local(move || {
-    markov.generate_quote_by_sentences(200);
+    markov.generate_quote_by_sentences(1000);
   });
 }

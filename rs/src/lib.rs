@@ -51,58 +51,68 @@ impl MarkovChain {
   }
 
   pub fn generate_quote_by_sentences(&self, sentence_count: usize) -> String {
-    let mut quote = Self::pick_next_word(&self.begin)
+    let mut rng = rand::rng();
+
+    let mut quote = self
+      .begin
+      .choose(&mut rng)
+      .unwrap()
       .split(' ')
       .collect::<Vec<&str>>();
     for _ in 0..sentence_count {
       // default length of sentence
       for _ in 0..17 - 1 {
-        quote.push(Self::pick_next_word(
-          self
-            .middle
-            .get(&quote[quote.len() - self.num..quote.len()].join(" "))
-            .unwrap(),
-        ))
+        let prev_phrase = &quote[quote.len() - self.num..quote.len()].join(" ");
+        let word_node = match self.middle.get(prev_phrase) {
+          Some(v) => v,
+          None => &self.begin,
+        };
+        let word = word_node.choose(&mut rng).unwrap();
+        quote.push(word);
       }
+
       while !MarkovChain::is_end_of_sentence(quote.last().unwrap()) {
         let prev_phrase = &quote[quote.len() - self.num..quote.len()].join(" ");
         let word_node = match self.end.get(prev_phrase) {
-          Some(node) => node,
-          None => self.middle.get(prev_phrase).unwrap(),
+          Some(v) => v,
+          None => match self.middle.get(prev_phrase) {
+            Some(v) => v,
+            None => &self.begin,
+          },
         };
-        quote.push(Self::pick_next_word(word_node))
+        let word = word_node.choose(&mut rng).unwrap();
+        quote.push(word);
       }
     }
     quote.join(" ")
   }
 
   pub fn generate_quote_by_words(&self, word_count: usize) -> String {
-    let mut quote = Self::pick_next_word(&self.begin)
+    let mut rng = rand::rng();
+
+    let mut quote = self
+      .begin
+      .choose(&mut rng)
+      .unwrap()
       .split(' ')
       .collect::<Vec<&str>>();
     for _ in self.num..word_count {
-      quote.push(Self::pick_next_word(
-        self
-          .middle
-          .get(&quote[quote.len() - self.num..quote.len()].join(" "))
-          .unwrap(),
-      ))
+      let prev_phrase = &quote[quote.len() - self.num..quote.len()].join(" ");
+      let word_node = match self.middle.get(prev_phrase) {
+        Some(v) => v,
+        None => &self.begin,
+      };
+      let word = word_node.choose(&mut rng).unwrap();
+      quote.push(word);
     }
     quote.join(" ")
   }
 
   fn is_end_of_sentence(word: &str) -> bool {
-    let last_letter = match word.chars().last() {
-      Some(letter) => letter,
-      None => return false,
-    };
-
-    last_letter == '.' || last_letter == '!' || last_letter == '?'
-  }
-
-  fn pick_next_word(word_node: &MarkovChainBranch) -> &str {
-    let mut rng = rand::rng();
-    word_node.choose(&mut rng).unwrap()
+    match word.chars().last() {
+      Some(c) => c == '.' || c == '!' || c == '?',
+      None => false,
+    }
   }
 }
 
