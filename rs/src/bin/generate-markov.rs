@@ -3,19 +3,45 @@ use std::fs;
 use std::io;
 use std::mem;
 use std::path;
+use std::process;
 use std::thread;
 
 use markov_danaher_quotes::generate_markovs;
 
 fn main() {
-  let up_to_markov_num_input = &env::args().nth(1).unwrap();
-  let up_to_markov_num = up_to_markov_num_input.parse::<usize>().unwrap();
+  let up_to_markov_num = match env::args().nth(1) {
+    Some(v) => match v.parse::<usize>() {
+      Ok(v) => v,
+      Err(e) => {
+        eprintln!(
+          "the markov_num must be an positive integer of at most {}:: {}",
+          usize::MAX,
+          e
+        );
+        process::exit(1);
+      }
+    },
+    None => {
+      eprintln!("provide a markov_num as the first argument");
+      process::exit(1)
+    }
+  };
 
-  let input_text_file_path_input = &env::args().nth(2).unwrap();
-  let input_text_file_path = path::Path::new(input_text_file_path_input);
-  let text = fs::read_to_string(input_text_file_path).unwrap();
+  let input_text = match env::args().nth(2) {
+    Some(v) => match fs::read_to_string(path::Path::new(&v)) {
+      Ok(v) => v,
+      Err(e) => {
+        eprintln!("failed to read input text file from {}:: {}", v, e);
+        process::exit(1)
+      }
+    },
+    None => {
+      eprintln!("provide a relative file path to the input text as the second argument");
+      process::exit(1)
+    }
+  };
 
-  let (metadata, markov_chains) = generate_markovs(&text, up_to_markov_num);
+  let (metadata, markov_chains) = generate_markovs(&input_text, up_to_markov_num);
 
   println!("{:?}", metadata);
 
