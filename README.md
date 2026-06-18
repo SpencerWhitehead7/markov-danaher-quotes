@@ -18,6 +18,12 @@ The rust implementation is a little tricker to build/run, because `quote-lambda`
 
 To get `quote-lambda` running in an AWS lambda, see the information [here](https://github.com/awslabs/aws-lambda-rust-runtime) (for source code reference) and [here](https://docs.aws.amazon.com/sdk-for-rust/latest/dg/lambda.html) (for build/deploy reference). I compiled it with [Cargo Lambda](https://www.cargo-lambda.info) `cargo lambda build --bin quote-lambda --release --output-format zip --arm64` and uploaded the zip through the aws console. It is currently running in a lambda with runtime `Amazon Linux 2023` and architecture `arm64`.
 
+### Rust profiling
+
+You can benchmark the rust functions with `cargo bench`
+
+You can profile the rust functions with [samply](https://github.com/mstange/samply) `cargo build --profile profiling --bin generate-markov && samply record ./target/profiling/generate-markov 3 ../input.txt`, replacing the binary to profile and arguments as appropriate.
+
 ## Future plans
 
 Every few years, I'd like to scrape all the new posts off social media and regenerate the markov chain with more data. The chain will get better at mimicking him the more he writes and the more data I can feed it, so maybe in ten years or so the chain will be able to write his posts for him and no one'll know the difference.
