@@ -2,7 +2,6 @@ use std::fs;
 use std::io;
 
 use markov_danaher_quotes::MarkovChain;
-use markov_danaher_quotes::generate_markovs;
 
 fn main() {
   divan::main();
@@ -13,7 +12,7 @@ fn generate_markov(bencher: divan::Bencher) {
   let text = fs::read_to_string("../input.txt").unwrap();
 
   bencher.bench_local(move || {
-    generate_markovs(&text, 3);
+    MarkovChain::new(3, &text);
   });
 }
 

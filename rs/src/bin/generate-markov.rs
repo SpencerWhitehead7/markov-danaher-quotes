@@ -6,7 +6,8 @@ use std::path;
 use std::process;
 use std::thread;
 
-use markov_danaher_quotes::generate_markovs;
+use markov_danaher_quotes::MarkovChain;
+use markov_danaher_quotes::Metadata;
 
 fn main() {
   let up_to_markov_num = match env::args().nth(1) {
@@ -41,35 +42,38 @@ fn main() {
     }
   };
 
-  let (metadata, markov_chains) = generate_markovs(&input_text, up_to_markov_num);
-
-  println!("{:?}", metadata);
-
-  ciborium::into_writer(
-    &metadata,
-    fs::File::create("../rsResources/markovMetadata").unwrap(),
-  )
-  .unwrap();
-
   thread::scope(|s| {
-    markov_chains
-      .iter()
-      .map(|mc| {
-        s.spawn(move || {
-          let output_file_path = format!("../rsResources/markov{}", mc.num);
-          let output_file = fs::File::create(output_file_path).unwrap();
-          let w = io::BufWriter::new(output_file);
+    let text = &input_text;
 
-          ciborium::into_writer(mc, w).unwrap()
-        })
-      })
-      .collect::<Vec<_>>()
-      .into_iter()
-      .map(|h| h.join().unwrap())
-      .collect::<Vec<_>>()
+    s.spawn(move || {
+      let metadata = Metadata::new(text);
+      println!("{:?}", metadata);
+
+      let output_file_path = "../rsResources/markovMetadata";
+      let output_file = fs::File::create(output_file_path).unwrap();
+      let w = io::BufWriter::new(output_file);
+
+      ciborium::into_writer(&metadata, w).unwrap();
+
+      // Prevent dropping/deallocating metadata - leak it for the process lifetime
+      // the OS will reclaim it on exit
+      mem::forget(metadata);
+    });
+
+    for markov_num in 1..=up_to_markov_num {
+      s.spawn(move || {
+        let mc = MarkovChain::new(markov_num, text);
+
+        let output_file_path = format!("../rsResources/markov{}", mc.num);
+        let output_file = fs::File::create(output_file_path).unwrap();
+        let w = io::BufWriter::new(output_file);
+
+        ciborium::into_writer(&mc, w).unwrap();
+
+        // Prevent dropping/deallocating markov_chains - leak it for the process lifetime
+        // the OS will reclaim it on exit
+        mem::forget(mc);
+      });
+    }
   });
-
-  // Prevent dropping/deallocating markov_chains - leak it for the process lifetime
-  // the OS will reclaim it on exit
-  mem::forget(markov_chains);
 }

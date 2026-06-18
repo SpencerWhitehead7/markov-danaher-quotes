@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::thread;
 
 use rand::seq::IndexedRandom as _;
 
@@ -15,7 +14,12 @@ pub struct MarkovChain {
 }
 
 impl MarkovChain {
-  pub fn new(markov_num: usize, words: &Vec<&str>) -> Self {
+  pub fn new(markov_num: usize, text: &str) -> Self {
+    let words = &regex::Regex::new(r"\s+")
+      .unwrap()
+      .split(text)
+      .collect::<Vec<_>>();
+
     let mut begin = MarkovChainBranch::from([words[0..markov_num].join(" ")]);
     let mut middle = MarkovChainTrunk::new();
     let mut end = MarkovChainTrunk::new();
@@ -116,34 +120,22 @@ impl MarkovChain {
   }
 }
 
-pub fn generate_markovs(
-  text: &str,
-  max_markov_num: usize,
-) -> (HashMap<&str, f32>, Vec<MarkovChain>) {
-  let words = &regex::Regex::new(r"\s+")
-    .unwrap()
-    .split(text)
-    .collect::<Vec<_>>();
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Metadata {
+  word_count: usize,
+  sentence_count: usize,
+  words_per_sentence: f32,
+}
 
-  let sentence_count = regex::Regex::new(r"[.!?]+").unwrap().split(text).count();
+impl Metadata {
+  pub fn new(text: &str) -> Self {
+    let word_count = regex::Regex::new(r"\s+").unwrap().split(text).count();
+    let sentence_count = regex::Regex::new(r"[.!?]+").unwrap().split(text).count();
 
-  let metadata = HashMap::from([
-    ("wordCount", words.len() as f32),
-    ("sentenceCount", sentence_count as f32),
-    (
-      "wordsPerSentence",
-      words.len() as f32 / sentence_count as f32,
-    ),
-  ]);
-
-  let markov_chains = thread::scope(|s| {
-    (1..=max_markov_num)
-      .map(|markov_num| s.spawn(move || MarkovChain::new(markov_num, words)))
-      .collect::<Vec<_>>()
-      .into_iter()
-      .map(|h| h.join().unwrap())
-      .collect::<Vec<_>>()
-  });
-
-  (metadata, markov_chains)
+    Self {
+      word_count,
+      sentence_count,
+      words_per_sentence: word_count as f32 / sentence_count as f32,
+    }
+  }
 }
